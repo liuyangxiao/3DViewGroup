@@ -1,12 +1,18 @@
 package com.burning.foethedog;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Camera;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
+import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -50,47 +56,334 @@ public class Rota3DSwithView extends FrameLayout {
         setWillNotDraw(false);
     }
 
+    private void initRoat3DStyle(AttributeSet attrs) {
+        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.rota3DVSwithView);
+        rotateV = typedArray.getBoolean(R.styleable.rota3DVSwithView_rotateV, false);
+        autoscroll = typedArray.getBoolean(R.styleable.rota3DVSwithView_autoscroll, true);
+        rotation = typedArray.getInt(R.styleable.rota3DVSwithView_rotation, 40);
+        heightRatio = typedArray.getFloat(R.styleable.rota3DVSwithView_heightRatio, 0.7f);
+        widthRatio = typedArray.getFloat(R.styleable.rota3DVSwithView_widthRatio, 0.7f);
+
+    }
+
+    private void setChildCenter() {
+        int count = getChildCount();
+        for (int i = 0; i < count; i++) {
+            View child = getChildAt(i);
+            LayoutParams layoutParams = (LayoutParams) child.getLayoutParams();
+            layoutParams.width = (int) (getWidth() * widthRatio);
+            layoutParams.height = (int) (getWidth() * heightRatio);
+            layoutParams.gravity = Gravity.CENTER;
+            child.setLayoutParams(layoutParams);
+            child.setClickable(true);
+        }
+    }
+
+    float widthRatio = 0.7f;
+    float heightRatio = 0.7f;
+
     public Rota3DSwithView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        initRoat3DStyle(attrs);
+
         initRoat3D();
     }
 
     public Rota3DSwithView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        initRoat3DStyle(attrs);
         initRoat3D();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public Rota3DSwithView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        initRoat3DStyle(attrs);
         initRoat3D();
     }
 
+
+    //获取子View的宽或者高--作为旋转和移动依据
+    int childHeight;
     int childWith;
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        childHeight = getChildAt(0).getMeasuredHeight();
         childWith = getChildAt(0).getMeasuredWidth();
         super.onLayout(changed, left, top, right, bottom);
+        setChildCenter();
     }
 
     //摄像机 为点光源  正真的直角  反而看起来 并不是直角
-    static int rotation = 40;// 设定外角 根据需要自行设定
-    int rotationX = 00;
+    int rotation = 30;// 设定外角
+    //  static int rotation = 30;// 设定外角
+    int moveRotation = 00;
     int index = 0;
+
+    private void disDrawrX(Canvas canvas) {
+        int indexleft = getWidth() / 2;//中间显示视图 ----左边的位置
+        int postTranslateX = moveRotation * childWith / 2 / rotation;//设-----定边移动 距离
+        for (int i = 0; i < 4; i++)
+            chilDrawforCameraX(canvas, postTranslateX, indexleft, i);
+    }
+
+    private void disDrawrY(Canvas canvas) {
+        int indexleft = getHeight() / 2;//中间显示视图 ----左边的位置
+        int postTranslateX = moveRotation * childHeight / 2 / rotation;//设-----定边移动 距离
+        //定点  又称顶点
+        for (int i = 0; i < 4; i++) {
+            chilDrawforCameraY(canvas, postTranslateX, indexleft, i);
+        }
+    }
+
+    boolean rotateV = false;
+
+    public boolean isRotateV() {
+        return rotateV;
+    }
+
+    public void setRotateV(boolean rotateV) {
+        this.rotateV = rotateV;
+    }
+
+    public int getmoveRotation() {
+        return moveRotation;
+    }
+
+    public void setmoveRotation(int moveRotation) {
+        this.moveRotation = moveRotation;
+    }
 
     @Override
     protected void dispatchDraw(Canvas canvas) {
-        int indexleft = getWidth() / 2;//中间显示视图 ----左边的位置
-        int postTranslateX = rotationX * childWith / 2 / rotation;//设-----定边移动 距离
-        //定点  又称顶点
-        //  chilDrawforCamera(canvas, postTranslateX, indexleft, 3);//预绘制 的 县绘制  防止遮挡
-        for (int i = 0; i < 4; i++)
-            chilDrawforCamera(canvas, postTranslateX, indexleft, i);
-        if (!isTouch)
+        if (rotateV) {
+            disDrawrY(canvas);
+        } else {
+            disDrawrX(canvas);
+        }
+
+        if (!isTouch && isAutoscroll())
             handler.sendEmptyMessageDelayed(1, 100);
     }
 
-    private void setCameraChange(int translate, int roat, int i) {
+    boolean autoscroll = true;
+
+    public boolean isAutoscroll() {
+        return autoscroll;
+    }
+
+    public void setAutoscroll(boolean autoscroll) {
+        this.autoscroll = autoscroll;
+    }
+
+    private void setCameraChangeY(int translate, int roat, int i) {
+        switch (i) {
+            case 0:
+                //预绘制 的VIEW
+                mCamera.translate(0, -translate / 2, 0);
+                mCamera.rotateX(-roat);
+                mCamera.translate(0, -translate / 2, 0);
+
+                mCamera.translate(0, -translate / 2, 0);
+                mCamera.rotateX(-roat);
+                mCamera.translate(0, -translate / 2, 0);
+                break;
+            //当前位置两侧的View
+            case 1:
+                mCamera.translate(0, translate / 2, 0);
+                mCamera.rotateX(roat);
+                mCamera.translate(0, translate / 2, 0);
+                break;
+
+            case 2:
+                mCamera.translate(0, -translate / 2, 0);
+                mCamera.rotateX(-roat);
+                mCamera.translate(0, -translate / 2, 0);
+                break;
+            //最后绘制 当前显示位置 防止 被遮挡
+            case 3:
+                mCamera.rotateX(0);
+                break;
+        }
+
+
+    }
+
+    boolean isrightortop = false;
+    Handler handler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 1:
+                    if (isTouch || !isAutoscroll())
+                        return;
+                    if (isrightortop)
+                        moveRotation++;
+                    else
+                        moveRotation--;
+                    if (Math.abs(moveRotation) == rotation) {
+                        moveRotation = 0;
+                        index = index % getChildCount();
+                        if (isrightortop)
+                            index--;
+                        else
+                            index++;
+                    }
+                    Rota3DSwithView.this.invalidate();
+                    break;
+            }
+        }
+    };
+
+
+    private void chilDrawforCameraY(Canvas canvas, int postTranslateX, int indexleft, int i) {
+        canvas.save();
+        mCamera.save();
+        mMaxtrix.reset();
+        mCamera.translate(0, postTranslateX, 0);
+        mCamera.rotateX(moveRotation);
+        mCamera.translate(0, postTranslateX, 0);
+        if (postTranslateX == 0) {
+            if (isrightortop)
+                setCameraChangeY(childHeight, rotation, i);
+            else
+                setCameraChangeY(-childHeight, -rotation, i);
+        } else if (postTranslateX > 0) {
+            setCameraChangeY(childHeight, rotation, i);
+        } else if (postTranslateX < 0) {
+            setCameraChangeY(-childHeight, -rotation, i);
+        }
+        mCamera.getMatrix(mMaxtrix);
+        mCamera.restore();
+        mMaxtrix.preTranslate(-getWidth() / 2, -indexleft);//指定在 屏幕上 运行的棱 是哪一条
+        mMaxtrix.postTranslate(getWidth() / 2, indexleft);//运行路径
+        canvas.concat(mMaxtrix);
+        //绘制
+        View childAt = getChildAt((swithView(i) + 2 * getChildCount()) % getChildCount());
+        drawChild(canvas, childAt, 0);
+        canvas.restore();
+    }
+
+    private int swithView(int i) {
+        int k = 0;
+
+        switch (i) {
+            case 0:
+                if (isrightortop)
+                    k = index - 2;
+                else
+                    k = index + 2;
+                break;
+            case 1:
+                if (isrightortop)
+                    k = index + 1;
+                else
+                    k = index - 1;
+                break;
+            case 2:
+                if (isrightortop)
+                    k = index - 1;
+                else
+                    k = index + 1;
+                break;
+            case 3:
+                k = index;
+                break;
+        }
+        return k;
+    }
+
+    boolean isTouch = false;
+    int downXorY = 0;
+
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        System.out.println("dispatchTouchEvent");
+        //这里我们就 就只分发给当前index子View
+        isTouch = event.getAction() == MotionEvent.ACTION_MOVE;
+        if (!onInterceptTouchEvent(event)) {
+            index = index % getChildCount();
+            return getChildAt((index + getChildCount()) % getChildCount()).dispatchTouchEvent(event);
+        }
+        return super.dispatchTouchEvent(event);
+    }
+
+    int thisRx = 0;
+    int thisindex;
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        System.out.println("onInterceptTouchEvent");
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                System.out.println("onInterceptTouchEvent-------index" + index);
+                if (isRotateV()) {
+                    downXorY = (int) event.getY();
+                } else {
+                    downXorY = (int) event.getX();
+
+                }
+                // downY = (int) event.getY();
+                thisindex = index;
+                thisRx = moveRotation;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                System.out.println("onInterceptTouchEvent-------thisindex" + index);
+                System.out.println("onInterceptTouchEvent-------ACTION_MOVE");
+                if (isRotateV()) {
+                    if (Math.abs(event.getY() - downXorY) > 50) {
+                        return true /*onTouchEvent(event)*/;
+                    }
+                } else {
+                    if (Math.abs(event.getX() - downXorY) > 50) {
+                        return true /*onTouchEvent(event)*/;
+                    }
+                }
+                break;
+        }
+        return false;
+    }
+
+    int rotationMove = 00;
+
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int moveX = 0;
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+
+                if (isRotateV()) {
+                    downXorY = (int) event.getY();
+                } else {
+                    downXorY = (int) event.getX();
+                }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                handler.removeCallbacksAndMessages(null);
+                int moveRxory = 0;
+                if (isRotateV()) {
+                    moveX = -((int) event.getY() - downXorY);
+                    moveRxory = thisRx + moveX * rotation * 2 / (getHeight() + 100);
+                } else {
+                    moveX = (int) event.getX() - downXorY;
+                    moveRxory = thisRx + moveX * rotation * 2 / (getWidth() + 100);
+                }
+                isrightortop = (moveRxory > 0) ? true : false;
+                int addindex = moveRxory / rotation;
+                index = thisindex - addindex;
+                moveRotation = moveRxory % rotation;
+                this.invalidate();
+                break;
+            case MotionEvent.ACTION_UP:
+                handler.removeCallbacksAndMessages(null);
+                this.invalidate();
+                break;
+        }
+        return true;
+    }
+
+    private void setCameraChangeX(int translate, int roat, int i) {
         switch (i) {
             case 0:
                 //预绘制 的VIEW
@@ -123,49 +416,22 @@ public class Rota3DSwithView extends FrameLayout {
 
     }
 
-    boolean isright = false;
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 1:
-                    if (isTouch)
-                        return;
-                    if (isright)
-                        rotationX++;
-                    else
-                        rotationX--;
-                    if (Math.abs(rotationX) == rotation) {
-                        rotationX = 0;
-                        index = index % getChildCount();
-                        if (isright)
-                            index--;
-                        else
-                            index++;
-                    }
-                    Rota3DSwithView.this.invalidate();
-                    break;
-            }
-        }
-    };
-
-
-    private void chilDrawforCamera(Canvas canvas, int postTranslateX, int indexleft, int i) {
+    private void chilDrawforCameraX(Canvas canvas, int postTranslateX, int indexleft, int i) {
         canvas.save();
         mCamera.save();
         mMaxtrix.reset();
         mCamera.translate(postTranslateX, 0, 0);
-        mCamera.rotateY(rotationX);
+        mCamera.rotateY(moveRotation);
         mCamera.translate(postTranslateX, 0, 0);
         if (postTranslateX == 0) {
-            if (isright)
-                setCameraChange(childWith, rotation, i);
+            if (isrightortop)
+                setCameraChangeX(childWith, rotation, i);
             else
-                setCameraChange(-childWith, -rotation, i);
+                setCameraChangeX(-childWith, -rotation, i);
         } else if (postTranslateX > 0) {
-            setCameraChange(childWith, rotation, i);
+            setCameraChangeX(childWith, rotation, i);
         } else if (postTranslateX < 0) {
-            setCameraChange(-childWith, -rotation, i);
+            setCameraChangeX(-childWith, -rotation, i);
         }
         mCamera.getMatrix(mMaxtrix);
         mCamera.restore();
@@ -178,100 +444,11 @@ public class Rota3DSwithView extends FrameLayout {
         canvas.restore();
     }
 
-    private int swithView(int i) {
-        int k = 0;
-
-        switch (i) {
-            case 0:
-                if (isright)
-                    k = index - 2;
-                else
-                    k = index + 2;
-                break;
-            case 1:
-                if (isright)
-                    k = index + 1;
-                else
-                    k = index - 1;
-                break;
-            case 2:
-                if (isright)
-                    k = index - 1;
-                else
-                    k = index + 1;
-                break;
-            case 3:
-                k = index;
-                break;
-        }
-        return k;
-    }
-
-    boolean isTouch = true;
-    int downX = 0;
-
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        //这里我们就 就只分发给当前index子View
-        isTouch = event.getAction() == MotionEvent.ACTION_MOVE;
-        if (!onInterceptTouchEvent(event)) {
-            index = index % getChildCount();
-            return getChildAt((index + getChildCount()) % getChildCount()).dispatchTouchEvent(event);
-
-        }
-        return super.dispatchTouchEvent(event);
-    }
-
-    int thisRx = 0;
-    int thisindex;
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                downX = (int) event.getX();
-                thisindex = index;
-                thisRx = rotationX;
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if (Math.abs(event.getX() - downX) > 50) {
-                    return true /*onTouchEvent(event)*/;
-                }
-                break;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int moveX = 0;
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                downX = (int) event.getX();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                handler.removeCallbacksAndMessages(null);
-                //     isTouch = true;
-                moveX = (int) event.getX() - downX;
-                int moveRx = thisRx + moveX * rotation * 2 / (getWidth() + 100);
-                isright = (moveRx > 0) ? true : false;
-                int addindex = moveRx / rotation;
-                index = thisindex - addindex;
-                rotationX = moveRx % rotation;
-                System.out.println("===thisRx===" + thisRx + "===moveRx===" + moveRx + "=========addindex=" + addindex);
-                Rota3DSwithView.this.invalidate();
-                break;
-            case MotionEvent.ACTION_UP:
-                System.out.println("===ACTION_UP===");
-                //  isTouch = false;
-                handler.removeCallbacksAndMessages(null);
-                Rota3DSwithView.this.invalidate();
-                break;
-        }
-        return true;
-    }
 
     public void destory() {
         handler.removeCallbacksAndMessages(null);
         handler = null;
     }
+
+
 }

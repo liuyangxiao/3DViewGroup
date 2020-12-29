@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public int getItemCount() {
-                return 30;
+                return 90;
             }
         });
     }
