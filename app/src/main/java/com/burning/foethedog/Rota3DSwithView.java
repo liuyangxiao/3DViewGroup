@@ -1,5 +1,9 @@
 package com.burning.foethedog;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -15,6 +19,9 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 
 
@@ -85,7 +92,6 @@ public class Rota3DSwithView extends FrameLayout {
     public Rota3DSwithView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initRoat3DStyle(attrs);
-
         initRoat3D();
     }
 
@@ -116,7 +122,7 @@ public class Rota3DSwithView extends FrameLayout {
     }
 
     //摄像机 为点光源  正真的直角  反而看起来 并不是直角
-    int rotation = 30;// 设定外角
+    int rotation = 40;// 设定外角
     //  static int rotation = 30;// 设定外角
     int moveRotation = 00;
     int index = 0;
@@ -224,11 +230,14 @@ public class Rota3DSwithView extends FrameLayout {
                         moveRotation--;
                     if (Math.abs(moveRotation) == rotation) {
                         moveRotation = 0;
-                        index = index % getChildCount();
-                        if (isrightortop)
-                            index--;
-                        else
-                            index++;
+                        int position = index % getChildCount();
+                        reSetIndex(position);
+                        if (isrightortop) {
+                            position = index - 1;
+                        } else {
+                            position = index + 1;
+                        }
+                        reSetIndex(position);
                     }
                     Rota3DSwithView.this.invalidate();
                     break;
@@ -298,7 +307,6 @@ public class Rota3DSwithView extends FrameLayout {
     int downXorY = 0;
 
     public boolean dispatchTouchEvent(MotionEvent event) {
-        System.out.println("dispatchTouchEvent");
         //这里我们就 就只分发给当前index子View
         isTouch = event.getAction() == MotionEvent.ACTION_MOVE;
         if (!onInterceptTouchEvent(event)) {
@@ -309,27 +317,21 @@ public class Rota3DSwithView extends FrameLayout {
     }
 
     int thisRx = 0;
-    int thisindex;
+    int showIndex;
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        System.out.println("onInterceptTouchEvent");
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                System.out.println("onInterceptTouchEvent-------index" + index);
                 if (isRotateV()) {
                     downXorY = (int) event.getY();
                 } else {
                     downXorY = (int) event.getX();
-
                 }
-                // downY = (int) event.getY();
-                thisindex = index;
+                showIndex = index;
                 thisRx = moveRotation;
                 break;
             case MotionEvent.ACTION_MOVE:
-                System.out.println("onInterceptTouchEvent-------thisindex" + index);
-                System.out.println("onInterceptTouchEvent-------ACTION_MOVE");
                 if (isRotateV()) {
                     if (Math.abs(event.getY() - downXorY) > 50) {
                         return true /*onTouchEvent(event)*/;
@@ -344,15 +346,12 @@ public class Rota3DSwithView extends FrameLayout {
         return false;
     }
 
-    int rotationMove = 00;
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        int moveX = 0;
+        // int moveX = 0;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-
                 if (isRotateV()) {
                     downXorY = (int) event.getY();
                 } else {
@@ -361,7 +360,8 @@ public class Rota3DSwithView extends FrameLayout {
                 break;
             case MotionEvent.ACTION_MOVE:
                 handler.removeCallbacksAndMessages(null);
-                int moveRxory = 0;
+                ontouchView(event);
+              /*  int moveRxory = 0;
                 if (isRotateV()) {
                     moveX = -((int) event.getY() - downXorY);
                     moveRxory = thisRx + moveX * rotation * 2 / (getHeight() + 100);
@@ -370,10 +370,12 @@ public class Rota3DSwithView extends FrameLayout {
                     moveRxory = thisRx + moveX * rotation * 2 / (getWidth() + 100);
                 }
                 isrightortop = (moveRxory > 0) ? true : false;
-                int addindex = moveRxory / rotation;
-                index = thisindex - addindex;
+                int removeItem = moveRxory / rotation;
+                int position = showIndex - removeItem;
+                reSetIndex(position);
+                //  showDataPage();
                 moveRotation = moveRxory % rotation;
-                this.invalidate();
+                this.invalidate();*/
                 break;
             case MotionEvent.ACTION_UP:
                 handler.removeCallbacksAndMessages(null);
@@ -382,6 +384,44 @@ public class Rota3DSwithView extends FrameLayout {
         }
         return true;
     }
+
+    private int ontouchView(MotionEvent event) {
+        int movedistance = 0;
+        int moveRxory = 0;
+        if (isRotateV()) {
+            movedistance = -((int) event.getY() - downXorY);
+            moveRxory = thisRx + movedistance * rotation * 2 / (getHeight() + 100);
+        } else {
+            movedistance = (int) event.getX() - downXorY;
+            moveRxory = thisRx + movedistance * rotation * 2 / (getWidth() + 100);
+        }
+
+        rotaViewtangle(moveRxory);
+        return movedistance;
+    }
+
+    private int rotaViewtangle(int moveRxory) {
+        System.out.println("-nextPage--==2=moveRotation===" + moveRotation);
+        isrightortop = (moveRxory > 0) ? true : false;
+        int removeItem = moveRxory / rotation;
+        int position = showIndex - removeItem;
+        // int position = index - removeItem;
+        reSetIndex(position);
+        moveRotation = moveRxory % rotation;
+        this.invalidate();
+        System.out.println("-nextPage--==3=moveRotation===" + moveRotation);
+        return moveRotation;
+    }
+
+    private void rotaViewtangleAnimation(int moveRxory) {
+       /* int removeItem = moveRxory / rotation;
+        int position = showIndex - removeItem;
+        reSetIndex(position);*/
+        moveRotation = moveRxory % rotation;
+        this.invalidate();
+    }
+
+    int testObj = 0;
 
     private void setCameraChangeX(int translate, int roat, int i) {
         switch (i) {
@@ -450,5 +490,91 @@ public class Rota3DSwithView extends FrameLayout {
         handler = null;
     }
 
+    private void reSetIndex(int position) {
+        index = position;
+        showDataPage(position);
+/*
+        if (position != index) {
+            if (position < 0) {
+                int rindex = position % getChildCount();
+                index = rindex + getChildCount() + 1;
+                showDataPage();
+            } else {
+                index = position % getChildCount();
+                showDataPage();
+            }
 
+        }
+*/
+    }
+
+    int texta = 0;
+
+    @SuppressLint("ObjectAnimatorBinding")
+    public void nextPage() {
+        isrightortop = true;
+        int texta = moveRotation;
+        showIndex = index;
+        Interpolator interpolator = new AccelerateInterpolator();
+        ObjectAnimator mAnimator = ObjectAnimator.ofInt(this, "texta", moveRotation, rotation);
+        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int animatedValue = (int) animation.getAnimatedValue();
+                rotaViewtangle(animatedValue);
+            }
+        });
+        mAnimator.setInterpolator(interpolator);
+        mAnimator.setDuration(200);
+        mAnimator.start();
+    }
+
+
+    @SuppressLint("ObjectAnimatorBinding")
+    public void returnPage() {
+        isrightortop = false;
+        int texta = moveRotation;
+        showIndex = index;
+        Interpolator interpolator = new AccelerateInterpolator();
+        ObjectAnimator mAnimator = ObjectAnimator.ofInt(this, "texta", moveRotation, -rotation);
+        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int animatedValue = (int) animation.getAnimatedValue();
+                rotaViewtangle(animatedValue);
+            }
+        });
+        mAnimator.setInterpolator(interpolator);
+        mAnimator.setDuration(200);
+        mAnimator.start();
+    }
+
+
+    int showPage = 0;
+
+    private void showDataPage(int position) {
+        int i = position % getChildCount();
+        int mathpage = 0;
+        if (i > 0) {
+            mathpage = i;
+        } else {
+            mathpage = i + 1 + getChildCount();
+        }
+        if (mathpage != showPage) {
+            showPage = mathpage;
+            if (r3DPagechange != null) {
+                r3DPagechange.onPageChanged(showPage);
+            }
+        }
+    }
+
+    R3DPagechange r3DPagechange;
+
+    public void setR3DPagechange(R3DPagechange r3DPagechange) {
+        this.r3DPagechange = r3DPagechange;
+    }
+
+    public interface R3DPagechange {
+        void onPageChanged(int position);
+    }
 }
