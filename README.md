@@ -3,7 +3,8 @@
 	
    ![img](https://github.com/liuyangxiao/3DViewGroup/blob/master/3d.gif)
 
-
+    #项目引用
+      implementation 'icefordog.3dviewgroup:3dview:1.1.0'
    # 使用方式如下
 
       <com.burning.foethedog.Rota3DSwithView
