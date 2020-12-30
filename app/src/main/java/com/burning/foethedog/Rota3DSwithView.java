@@ -508,35 +508,15 @@ public class Rota3DSwithView extends FrameLayout {
 */
     }
 
-    int texta = 0;
-
-    @SuppressLint("ObjectAnimatorBinding")
-    public void nextPage() {
-        isrightortop = true;
-        int texta = moveRotation;
-        showIndex = index;
-        Interpolator interpolator = new AccelerateInterpolator();
-        ObjectAnimator mAnimator = ObjectAnimator.ofInt(this, "texta", moveRotation, rotation);
-        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                int animatedValue = (int) animation.getAnimatedValue();
-                rotaViewtangle(animatedValue);
-            }
-        });
-        mAnimator.setInterpolator(interpolator);
-        mAnimator.setDuration(200);
-        mAnimator.start();
-    }
-
 
     @SuppressLint("ObjectAnimatorBinding")
     public void returnPage() {
-        isrightortop = false;
-        int texta = moveRotation;
+        startAnimation(true);
+      /*  isrightortop = true;
+        // int texta = moveRotation;
         showIndex = index;
         Interpolator interpolator = new AccelerateInterpolator();
-        ObjectAnimator mAnimator = ObjectAnimator.ofInt(this, "texta", moveRotation, -rotation);
+        ObjectAnimator mAnimator = ObjectAnimator.ofInt(this, "xxxx", moveRotation, rotation);
         mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -545,10 +525,60 @@ public class Rota3DSwithView extends FrameLayout {
             }
         });
         mAnimator.setInterpolator(interpolator);
-        mAnimator.setDuration(200);
-        mAnimator.start();
+        mAnimator.setDuration(120);
+        mAnimator.start();*/
     }
 
+    private boolean isAnimationStarting = false;
+
+    @SuppressLint("ObjectAnimatorBinding")
+    public void nextPage() {
+        startAnimation(false);
+       /* isrightortop = false;
+        //  int texta = moveRotation;
+        showIndex = index;
+        Interpolator interpolator = new AccelerateInterpolator();
+        ObjectAnimator mAnimator = ObjectAnimator.ofInt(this, "xxxxx", moveRotation, -rotation);
+        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int animatedValue = (int) animation.getAnimatedValue();
+                rotaViewtangle(animatedValue);
+            }
+        });
+        mAnimator.setInterpolator(interpolator);
+        mAnimator.setDuration(120);
+        mAnimator.start();*/
+    }
+
+    @SuppressLint("ObjectAnimatorBinding")
+    private void startAnimation(boolean rightortop) {
+        if (isAnimationStarting) {
+            return;
+        }
+        isAnimationStarting = true;
+        isrightortop = rightortop;
+        showIndex = index;
+        Interpolator interpolator = new AccelerateInterpolator();
+        ObjectAnimator mAnimator = ObjectAnimator.ofInt(this, "xxxxx", moveRotation, rightortop ? rotation : -rotation);
+        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int animatedValue = (int) animation.getAnimatedValue();
+                rotaViewtangle(animatedValue);
+            }
+        });
+        mAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                isAnimationStarting = false;
+            }
+        });
+        mAnimator.setInterpolator(interpolator);
+        mAnimator.setDuration(120);
+        mAnimator.start();
+    }
 
     int showPage = 0;
 
