@@ -269,8 +269,9 @@ public class Rota3DSwithView extends FrameLayout {
         mMaxtrix.postTranslate(getWidth() / 2, indexleft);//运行路径
         canvas.concat(mMaxtrix);
         //绘制
-        View childAt = getChildAt((swithView(i) + 2 * getChildCount()) % getChildCount());
-        drawChild(canvas, childAt, 0);
+        View childAt = getChildAt(swithView(i)/*(swithView(i) + 2 * getChildCount()) % getChildCount()*/);
+        if (childAt != null)
+            drawChild(canvas, childAt, 0);
         canvas.restore();
     }
 
@@ -300,7 +301,13 @@ public class Rota3DSwithView extends FrameLayout {
                 k = index;
                 break;
         }
-        return k;
+        int j = k % getChildCount();
+        if (j >= 0) {
+            return j;
+        } else {
+            return (j + getChildCount());
+        }
+//        return k;
     }
 
     boolean isTouch = false;
@@ -401,7 +408,6 @@ public class Rota3DSwithView extends FrameLayout {
     }
 
     private int rotaViewtangle(int moveRxory) {
-        System.out.println("-nextPage--==2=moveRotation===" + moveRotation);
         isrightortop = (moveRxory > 0) ? true : false;
         int removeItem = moveRxory / rotation;
         int position = showIndex - removeItem;
@@ -409,19 +415,8 @@ public class Rota3DSwithView extends FrameLayout {
         reSetIndex(position);
         moveRotation = moveRxory % rotation;
         this.invalidate();
-        System.out.println("-nextPage--==3=moveRotation===" + moveRotation);
         return moveRotation;
     }
-
-    private void rotaViewtangleAnimation(int moveRxory) {
-       /* int removeItem = moveRxory / rotation;
-        int position = showIndex - removeItem;
-        reSetIndex(position);*/
-        moveRotation = moveRxory % rotation;
-        this.invalidate();
-    }
-
-    int testObj = 0;
 
     private void setCameraChangeX(int translate, int roat, int i) {
         switch (i) {
@@ -480,7 +475,8 @@ public class Rota3DSwithView extends FrameLayout {
         canvas.concat(mMaxtrix);
         //绘制
         View childAt = getChildAt((swithView(i) + 2 * getChildCount()) % getChildCount());
-        drawChild(canvas, childAt, 0);
+        if (childAt != null)
+            drawChild(canvas, childAt, 0);
         canvas.restore();
     }
 
@@ -493,40 +489,12 @@ public class Rota3DSwithView extends FrameLayout {
     private void reSetIndex(int position) {
         index = position;
         showDataPage(position);
-/*
-        if (position != index) {
-            if (position < 0) {
-                int rindex = position % getChildCount();
-                index = rindex + getChildCount() + 1;
-                showDataPage();
-            } else {
-                index = position % getChildCount();
-                showDataPage();
-            }
-
-        }
-*/
     }
 
 
     @SuppressLint("ObjectAnimatorBinding")
     public void returnPage() {
         startAnimation(true);
-      /*  isrightortop = true;
-        // int texta = moveRotation;
-        showIndex = index;
-        Interpolator interpolator = new AccelerateInterpolator();
-        ObjectAnimator mAnimator = ObjectAnimator.ofInt(this, "xxxx", moveRotation, rotation);
-        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                int animatedValue = (int) animation.getAnimatedValue();
-                rotaViewtangle(animatedValue);
-            }
-        });
-        mAnimator.setInterpolator(interpolator);
-        mAnimator.setDuration(120);
-        mAnimator.start();*/
     }
 
     private boolean isAnimationStarting = false;
@@ -534,21 +502,6 @@ public class Rota3DSwithView extends FrameLayout {
     @SuppressLint("ObjectAnimatorBinding")
     public void nextPage() {
         startAnimation(false);
-       /* isrightortop = false;
-        //  int texta = moveRotation;
-        showIndex = index;
-        Interpolator interpolator = new AccelerateInterpolator();
-        ObjectAnimator mAnimator = ObjectAnimator.ofInt(this, "xxxxx", moveRotation, -rotation);
-        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                int animatedValue = (int) animation.getAnimatedValue();
-                rotaViewtangle(animatedValue);
-            }
-        });
-        mAnimator.setInterpolator(interpolator);
-        mAnimator.setDuration(120);
-        mAnimator.start();*/
     }
 
     @SuppressLint("ObjectAnimatorBinding")
@@ -585,10 +538,10 @@ public class Rota3DSwithView extends FrameLayout {
     private void showDataPage(int position) {
         int i = position % getChildCount();
         int mathpage = 0;
-        if (i > 0) {
+        if (i >= 0) {
             mathpage = i;
         } else {
-            mathpage = i + 1 + getChildCount();
+            mathpage = i + getChildCount();
         }
         if (mathpage != showPage) {
             showPage = mathpage;

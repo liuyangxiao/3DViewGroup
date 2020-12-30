@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,14 +11,15 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.burning.foethedog.MainActivity">
-
-
-
     <com.burning.foethedog.Rota3DSwithView
         android:id="@+id/roat_main"
         android:layout_width="match_parent"
-        app:rotateV="true"
-        android:layout_height="300dp">
+        android:layout_height="300dp"
+        app:autoscroll="true"
+        app:heightRatio="0.8"
+        app:rotateV="false"
+        app:rotation="40"
+        app:widthRatio="0.6">
 
         <TextView
             android:layout_width="200dp"
@@ -77,12 +78,12 @@
             android:background="#f00" />
 
     </com.burning.foethedog.Rota3DSwithView>
+
     <Button
         android:id="@+id/star_stop_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="暂停--开启" />
-
 
     <Button
         android:id="@+id/retupage_button"
@@ -95,5 +96,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="下一页" />
+
+
+
 
 </android.support.v7.widget.LinearLayoutCompat>
