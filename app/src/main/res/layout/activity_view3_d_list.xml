@@ -1,0 +1,50 @@
+<android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <Button
+        android:id="@+id/star_stop_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="暂停--开启" />
+
+    <Button
+        android:id="@+id/retupage_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="上一页" />
+
+    <Button
+        android:id="@+id/next_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="下一页" />
+
+    <Button
+        android:id="@+id/next_button_scoll_Direction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="调整旋转方向" />
+
+    <Button
+        android:id="@+id/next_button_layout_Direction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="调整布局方向" />
+
+
+
+    <com.burning.foethedog.Rota3DSwithViewList
+        android:id="@+id/rota3DSwithViewList_test"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:background="@color/colorAccent"
+        app:autoscroll="true" />
+
+
+</android.support.v7.widget.LinearLayoutCompat>

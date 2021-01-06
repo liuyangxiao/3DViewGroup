@@ -23,5 +23,6 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:25.3.1'
     implementation 'junit:junit:4.12'
     implementation 'com.android.support:recyclerview-v7:25.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:2.0.4'
     androidTestImplementation 'junit:junit:4.12'
 }

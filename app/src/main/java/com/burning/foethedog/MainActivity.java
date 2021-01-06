@@ -1,7 +1,10 @@
 package com.burning.foethedog;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,6 +33,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 rota3DSwithView.setAutoscroll(!rota3DSwithView.isAutoscroll());
             }
         });
+        findViewById(R.id.next_button_scoll_Direction).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rota3DSwithView.setIsleftortop(!rota3DSwithView.isIsleftortop());
+            }
+        });
+        findViewById(R.id.next_button_layout_Direction).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rota3DSwithView.setRotateV(!rota3DSwithView.isRotateV());
+            }
+        });
+        findViewById(R.id.next_button_startList).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, View3DListActivity.class));
+            }
+        });
+
 
         findViewById(R.id.retupage_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,13 +66,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-
-        RecyclerView reclerview = (RecyclerView) findViewById(R.id.test_recylerview);
+        reclerview = (RecyclerView) findViewById(R.id.test_recylerview);
         reclerview.setLayoutManager(new GridLayoutManager(reclerview.getContext(), Integer.valueOf(2)));
         reclerview.setAdapter(new RecyclerView.Adapter() {
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 TextView textView = new TextView(MainActivity.this);
+
                 RecyclerView.ViewHolder viewHolder = new RecyclerView.ViewHolder(textView) {
                 };
                 return viewHolder;
@@ -58,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-                ((TextView) holder.itemView).setText("item=====" + position);
+                ((TextView) holder.itemView).setText("item=====" + position + "lllllllllllllllllllllllllllllllla");
             }
 
             @Override
@@ -66,7 +88,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return 90;
             }
         });
+
+
     }
+
+    RecyclerView reclerview;
 
     @Override
     public void onClick(View v) {
