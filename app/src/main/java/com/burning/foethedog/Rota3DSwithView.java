@@ -15,7 +15,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.MessageQueue;
-import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -25,6 +24,8 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
+
+import androidx.annotation.RequiresApi;
 
 
 /**
@@ -116,6 +117,8 @@ public class Rota3DSwithView extends FrameLayout {
             ViewGroup.LayoutParams layoutParams = child.getLayoutParams();
             if (layoutParams.width != childWith) {
                 layoutParams.width = childWith;
+
+                //
                 layoutParams.height = childHeight;
                 child.setLayoutParams(layoutParams);
             }
