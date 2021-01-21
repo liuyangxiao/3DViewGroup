@@ -82,7 +82,6 @@ public class Rota3DSwithViewList extends FrameLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        System.out.println("=======onMeasure=======");
     }
 
     float widthRatio = 0.7f;
@@ -113,7 +112,6 @@ public class Rota3DSwithViewList extends FrameLayout {
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        System.out.println("=======onLayout=======");
         int rx = (int) ((right - left) * (1 - widthRatio) / 2);
         int ry = (int) ((bottom - top) * (1 - heightRatio) / 2);
         childHeight = (int) ((bottom - top) * heightRatio);
