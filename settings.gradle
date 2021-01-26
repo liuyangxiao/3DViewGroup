@@ -1,1 +1,2 @@
+include ':3dview'
 include ':app'

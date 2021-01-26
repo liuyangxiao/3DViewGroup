@@ -1,6 +1,5 @@
-package com.burning.foethedog;
+package com.test.foethedog;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -12,6 +11,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.burning.foethedog.Rota3DSwithView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     Rota3DSwithView rota3DSwithView;

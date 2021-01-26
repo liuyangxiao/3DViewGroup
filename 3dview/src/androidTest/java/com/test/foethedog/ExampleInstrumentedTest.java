@@ -1,4 +1,4 @@
-package com.burning.foethedog;
+package com.test.foethedog;
 
 
 import org.junit.Test;

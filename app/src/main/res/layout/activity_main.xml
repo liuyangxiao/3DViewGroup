@@ -1,127 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.test.foethedog.MainActivity">
 
 
-    <android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/activity_main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        tools:context="com.burning.foethedog.MainActivity">
+    <Button
+        android:id="@+id/star_stop_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="暂停--开启" />
 
+    <Button
+        android:id="@+id/retupage_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="上一页" />
 
-        <Button
-            android:id="@+id/star_stop_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="暂停--开启" />
+    <Button
+        android:id="@+id/next_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="下一页" />
 
-        <Button
-            android:id="@+id/retupage_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="上一页" />
+    <Button
+        android:id="@+id/next_button_scoll_Direction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="调整旋转方向" />
 
-        <Button
-            android:id="@+id/next_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="下一页" />
-
-        <Button
-            android:id="@+id/next_button_scoll_Direction"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="调整旋转方向" />
-
-        <Button
-            android:id="@+id/next_button_layout_Direction"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="调整布局方向" />
-
-        <com.burning.foethedog.Rota3DSwithView
-            android:id="@+id/roat_main"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:background="#F78"
-            app:autoscroll="true"
-            app:heightRatio="0.7"
-            app:rotateV="false"
-            app:rotation="40"
-            app:widthRatio="0.6">
-
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#f90990">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="#00f990"
-                    android:text="FrameLayout===你好我看看长度够不够不够我再加长一些应该够了" />
-            </FrameLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#f11f"
-                android:text="无敌嘻嘻嘻123456789你好我看看长度够不够不够我再加长一些应该够了" />
-
-            <TextView
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_gravity="center"
-                android:background="#66f"
-                android:gravity="center"
-                android:text="无敌嘻嘻嘻44444" />
-
-
-            <TextView
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:background="#f0f"
-                android:gravity="center"
-                android:text="无敌嘻嘻嘻5555" />
-
-            <TextView
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:background="#33f"
-                android:gravity="center"
-                android:text="无敌嘻嘻嘻66666" />
-
-            <TextView
-                android:layout_width="200dp"
-                android:layout_height="match_parent"
-                android:background="#fff"
-                android:gravity="center"
-                android:text="无敌嘻嘻嘻11111" />
-
-            <TextView
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_gravity="center"
-                android:background="#ff5"
-                android:gravity="center"
-                android:text="无敌嘻嘻嘻22222" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/test_recylerview"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_gravity="center"
-                android:background="#f00" />
-
-
-        </com.burning.foethedog.Rota3DSwithView>
+    <Button
+        android:id="@+id/next_button_layout_Direction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="调整布局方向" />
 
     <Button
         android:id="@+id/next_button_startList"
@@ -129,4 +49,82 @@
         android:layout_height="wrap_content"
         android:text="查看List预览" />
 
-    </android.support.v7.widget.LinearLayoutCompat>
+    <com.burning.foethedog.Rota3DSwithView
+        android:id="@+id/roat_main"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:background="#F78"
+        app:autoscroll="true"
+        app:heightRatio="0.7"
+        app:rotateV="false"
+        app:rotation="40"
+        app:widthRatio="0.6">
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#f90990">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#00f990"
+                android:text="FrameLayout===你好我看看长度够不够不够我再加长一些应该够了" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#f11f"
+            android:text="无敌嘻嘻嘻123456789你好我看看长度够不够不够我再加长一些应该够了" />
+
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:background="#66f"
+            android:gravity="center"
+            android:text="无敌嘻嘻嘻44444" />
+
+
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:background="#f0f"
+            android:gravity="center"
+            android:text="无敌嘻嘻嘻5555" />
+
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:background="#33f"
+            android:gravity="center"
+            android:text="无敌嘻嘻嘻66666" />
+
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:background="#fff"
+            android:gravity="center"
+            android:text="无敌嘻嘻嘻11111" />
+
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:background="#ff5"
+            android:gravity="center"
+            android:text="无敌嘻嘻嘻22222" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/test_recylerview"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:background="#f00" />
+
+
+    </com.burning.foethedog.Rota3DSwithView>
+
+</LinearLayout>

@@ -18,17 +18,14 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 
 import androidx.annotation.RequiresApi;
-import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 /**
@@ -54,12 +51,14 @@ import java.util.Set;
  * -------------------------// ┗┻┛　┗┻┛
  */
 
-public class Rota3DSwithViewList extends FrameLayout {
+public class Rota3DSwithView extends FrameLayout {
     Camera mCamera;
     Matrix mMaxtrix;
+    ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    public Rota3DSwithViewList(Context context) {
+    public Rota3DSwithView(Context context) {
         super(context);
+        initRoat3D();
     }
 
     private void initRoat3D() {
@@ -74,33 +73,29 @@ public class Rota3DSwithViewList extends FrameLayout {
         autoscroll = typedArray.getBoolean(R.styleable.rota3DVSwithView_autoscroll, true);
         setAutoscroll(autoscroll);
         rotation = typedArray.getInt(R.styleable.rota3DVSwithView_rotation, 40);
+        socallspeed = typedArray.getInt(R.styleable.rota3DVSwithView_speed, 80);
         heightRatio = typedArray.getFloat(R.styleable.rota3DVSwithView_heightRatio, 0.7f);
         widthRatio = typedArray.getFloat(R.styleable.rota3DVSwithView_widthRatio, 0.7f);
 
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
-
     float widthRatio = 0.7f;
     float heightRatio = 0.7f;
 
-    public Rota3DSwithViewList(Context context, AttributeSet attrs) {
+    public Rota3DSwithView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initRoat3DStyle(attrs);
         initRoat3D();
     }
 
-    public Rota3DSwithViewList(Context context, AttributeSet attrs, int defStyleAttr) {
+    public Rota3DSwithView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initRoat3DStyle(attrs);
         initRoat3D();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public Rota3DSwithViewList(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public Rota3DSwithView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         initRoat3DStyle(attrs);
         initRoat3D();
@@ -171,24 +166,11 @@ public class Rota3DSwithViewList extends FrameLayout {
         this.moveRotation = moveRotation;
     }
 
-    Set<Integer> showset = new HashSet<>();
-
     @Override
     protected void dispatchDraw(Canvas canvas) {
         if (getChildCount() == 0) {
             return;
         }
-        Set<Integer> reset = new HashSet<>();
-        for (int i = 0; i < 4; i++) {
-            int k = swithView(i);
-            int j = swithViewAdapter(i);
-            reset.add(j);
-            if (!showset.contains(j)) {
-                adapter.bindViewHolder(holders.get(k), j);
-            }
-        }
-        showset.clear();
-        showset.addAll(reset);
         if (rotateV) {
             disDrawrY(canvas);
         } else {
@@ -209,9 +191,26 @@ public class Rota3DSwithViewList extends FrameLayout {
         this.autoscroll = autoscroll;
     }
 
-    private void senMessageStart() {
+    int socallspeed = 80;
 
-        handler.sendEmptyMessageDelayed(2, 10);
+    private void senMessageStart() {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                while (autoscroll) {
+                    try {
+                        Thread.sleep(1000 / socallspeed);
+                        socallAnim();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (isTouch) {
+                        return;
+                    }
+                }
+            }
+        });
+        //handler.sendEmptyMessageDelayed(2, 10);
     }
 
     private void setCameraChangeY(int translate, int roat, int i) {
@@ -257,40 +256,20 @@ public class Rota3DSwithViewList extends FrameLayout {
         startAnimation(isleftortop);
     }
 
+/*
     Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 2: {
-                    if (getChildCount() == 0) {
+                    socallAnim();
+                    */
+/*if (getChildCount() == 0) {
                         return;
                     }
                     if (isTouch) {
                         return;
                     }
-                    if (isleftortop)
-                        moveRotation++;
-                    else
-                        moveRotation--;
-                    if (Math.abs(moveRotation) == rotation) {
-                        moveRotation = 0;
-                        int position = index % getAdapterCount();
-                        reSetIndex(position);
-                        if (isleftortop) {
-                            position = index - 1;
-                        } else {
-                            position = index + 1;
-                        }
-                        reSetIndex(position);
-                    }
-                    showIndex = index;
-                    rotaViewtangle(moveRotation);
-                    if (isAutoscroll())
-                        senMessageStart();
-                }
-             /*   case 1:
-                    if (isTouch || !isAutoscroll())
-                        return;
                     if (isleftortop)
                         moveRotation++;
                     else
@@ -306,12 +285,44 @@ public class Rota3DSwithViewList extends FrameLayout {
                         }
                         reSetIndex(position);
                     }
-                    // rotaViewtangle(moveRotation);
-                    Rota3DSwithView.this.invalidate();
-                    break;*/
+                    showIndex = index;
+                    rotaViewtangle(moveRotation);
+                    if (isAutoscroll())
+                        senMessageStart();*//*
+
+                }
             }
         }
     };
+*/
+
+    private void socallAnim() {
+        if (getChildCount() == 0) {
+            return;
+        }
+        if (isTouch) {
+            return;
+        }
+        if (isleftortop)
+            moveRotation++;
+        else
+            moveRotation--;
+        if (Math.abs(moveRotation) == rotation) {
+            moveRotation = 0;
+            int position = index % getChildCount();
+            reSetIndex(position);
+            if (isleftortop) {
+                position = index - 1;
+            } else {
+                position = index + 1;
+            }
+            reSetIndex(position);
+        }
+        showIndex = index;
+        rotaViewtangle(moveRotation);
+       /* if (isAutoscroll())
+            senMessageStart();*/
+    }
 
 
     private void chilDrawforCameraY(Canvas canvas, int postTranslateX, int indexleft, int i) {
@@ -377,41 +388,6 @@ public class Rota3DSwithViewList extends FrameLayout {
         }
 //        return k;
     }
-
-    private int swithViewAdapter(int i) {
-        int k = 0;
-        switch (i) {
-            case 0:
-                if (isleftortop)
-                    k = index - 2;
-                else
-                    k = index + 2;
-                break;
-            case 1:
-                if (isleftortop)
-                    k = index + 1;
-                else
-                    k = index - 1;
-                break;
-            case 2:
-                if (isleftortop)
-                    k = index - 1;
-                else
-                    k = index + 1;
-                break;
-            case 3:
-                k = index;
-                break;
-        }
-        int j = k % getAdapterCount();
-        if (j >= 0) {
-            return j;
-        } else {
-            return (j + getAdapterCount());
-        }
-//        return k;
-    }
-
 
     boolean isTouch = false;
     int downXorY = 0;
@@ -573,11 +549,6 @@ public class Rota3DSwithViewList extends FrameLayout {
     }
 
 
-    public void destory() {
-        handler.removeCallbacksAndMessages(null);
-        handler = null;
-    }
-
     private void reSetIndex(int position) {
         index = position;
         showDataPage(position);
@@ -628,12 +599,12 @@ public class Rota3DSwithViewList extends FrameLayout {
     int showPage = 0;
 
     private void showDataPage(int position) {
-        int i = position % getAdapterCount();
+        int i = position % getChildCount();
         int mathpage = 0;
         if (i >= 0) {
             mathpage = i;
         } else {
-            mathpage = i + getAdapterCount();
+            mathpage = i + getChildCount();
         }
         if (mathpage != showPage) {
             showPage = mathpage;
@@ -651,21 +622,5 @@ public class Rota3DSwithViewList extends FrameLayout {
 
     public interface R3DPagechange {
         void onPageChanged(int position);
-    }
-
-    RecyclerView.Adapter adapter;
-    ArrayList<RecyclerView.ViewHolder> holders = new ArrayList<>();
-
-    public void setAdapter(RecyclerView.Adapter adapter) {
-        this.adapter = adapter;
-        for (int i = 0; i < 4; i++) {
-            RecyclerView.ViewHolder viewHolder = adapter.createViewHolder(this, 0);
-            holders.add(viewHolder);
-            addView(viewHolder.itemView);
-        }
-    }
-
-    public int getAdapterCount() {
-        return adapter.getItemCount();
     }
 }

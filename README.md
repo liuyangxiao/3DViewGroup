@@ -24,6 +24,7 @@
               #子控件对于改viegroup 中的宽高比例 默认无为0.7     app:heightRatio  app:widthRatio
               #垂直或者水平滑动    app:rotateV="true"
               #偏转角度      app:rotation="40"
+              #旋转速度 -----app:speed
               setR3DPagechange   监听滑动页面正面页的变化
 
 #<com.burning.foethedog.Rota3DSwithViewList/>
