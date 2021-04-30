@@ -11,9 +11,6 @@ import android.graphics.Camera;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -134,17 +131,39 @@ public class Rota3DSwithView extends FrameLayout {
     private void disDrawrX(Canvas canvas) {
         int indexleft = getWidth() / 2;//中间显示视图 ----左边的位置
         int postTranslateX = moveRotation * childWith / 2 / rotation;//设-----定边移动 距离
-        for (int i = 0; i < 4; i++)
-            chilDrawforCameraX(canvas, postTranslateX, indexleft, i);
+
+        chilDrawforCameraX(canvas, postTranslateX, indexleft, 0);
+        chilDrawforCameraX(canvas, postTranslateX, indexleft, 1);
+        if (Math.abs(moveRotation) > (rotation / 2)) {
+            chilDrawforCameraX(canvas, postTranslateX, indexleft, 3);
+            chilDrawforCameraX(canvas, postTranslateX, indexleft, 2);
+        } else {
+            chilDrawforCameraX(canvas, postTranslateX, indexleft, 2);
+            chilDrawforCameraX(canvas, postTranslateX, indexleft, 3);
+        }
+     /*   for (int i = 0; i < 4; i++)
+            chilDrawforCameraX(canvas, postTranslateX, indexleft, i);*/
     }
 
     private void disDrawrY(Canvas canvas) {
         int indexleft = getHeight() / 2;//中间显示视图 ----左边的位置
         int postTranslateX = moveRotation * childHeight / 2 / rotation;//设-----定边移动 距离
         //定点  又称顶点
-        for (int i = 0; i < 4; i++) {
+      /*  for (int i = 0; i < 4; i++) {
+
             chilDrawforCameraY(canvas, postTranslateX, indexleft, i);
+        }*/
+        chilDrawforCameraY(canvas, postTranslateX, indexleft, 0);
+        chilDrawforCameraY(canvas, postTranslateX, indexleft, 1);
+        if (Math.abs(moveRotation) > (rotation / 2)) {
+            chilDrawforCameraY(canvas, postTranslateX, indexleft, 3);
+            chilDrawforCameraY(canvas, postTranslateX, indexleft, 2);
+        } else {
+            chilDrawforCameraY(canvas, postTranslateX, indexleft, 2);
+            chilDrawforCameraY(canvas, postTranslateX, indexleft, 3);
         }
+
+
     }
 
     boolean rotateV = false;
@@ -256,45 +275,6 @@ public class Rota3DSwithView extends FrameLayout {
         startAnimation(isleftortop);
     }
 
-/*
-    Handler handler = new Handler(Looper.getMainLooper()) {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 2: {
-                    socallAnim();
-                    */
-/*if (getChildCount() == 0) {
-                        return;
-                    }
-                    if (isTouch) {
-                        return;
-                    }
-                    if (isleftortop)
-                        moveRotation++;
-                    else
-                        moveRotation--;
-                    if (Math.abs(moveRotation) == rotation) {
-                        moveRotation = 0;
-                        int position = index % getChildCount();
-                        reSetIndex(position);
-                        if (isleftortop) {
-                            position = index - 1;
-                        } else {
-                            position = index + 1;
-                        }
-                        reSetIndex(position);
-                    }
-                    showIndex = index;
-                    rotaViewtangle(moveRotation);
-                    if (isAutoscroll())
-                        senMessageStart();*//*
-
-                }
-            }
-        }
-    };
-*/
 
     private void socallAnim() {
         if (getChildCount() == 0) {
@@ -307,21 +287,10 @@ public class Rota3DSwithView extends FrameLayout {
             moveRotation++;
         else
             moveRotation--;
-        if (Math.abs(moveRotation) == rotation) {
-            moveRotation = 0;
-            int position = index % getChildCount();
-            reSetIndex(position);
-            if (isleftortop) {
-                position = index - 1;
-            } else {
-                position = index + 1;
-            }
-            reSetIndex(position);
-        }
         showIndex = index;
         rotaViewtangle(moveRotation);
-       /* if (isAutoscroll())
-            senMessageStart();*/
+        if (isAutoscroll())
+            senMessageStart();
     }
 
 
@@ -386,7 +355,6 @@ public class Rota3DSwithView extends FrameLayout {
         } else {
             return (j + getChildCount());
         }
-//        return k;
     }
 
     boolean isTouch = false;
@@ -398,7 +366,12 @@ public class Rota3DSwithView extends FrameLayout {
         }
         //这里我们就 就只分发给当前index子View
         if (!onInterceptTouchEvent(event)) {
-            return getChildAt(swithView(3)).dispatchTouchEvent(event);
+            if (Math.abs(moveRotation) > (rotation / 2)) {
+                return getChildAt(swithView(2)).dispatchTouchEvent(event);
+            } else {
+                return getChildAt(swithView(3)).dispatchTouchEvent(event);
+            }
+
         }
         return super.dispatchTouchEvent(event);
     }
@@ -423,11 +396,11 @@ public class Rota3DSwithView extends FrameLayout {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (isRotateV()) {
-                    if (Math.abs(event.getY() - downXorY) > 50) {
+                    if (Math.abs(event.getY() - downXorY) > 10) {
                         return true /*onTouchEvent(event)*/;
                     }
                 } else {
-                    if (Math.abs(event.getX() - downXorY) > 50) {
+                    if (Math.abs(event.getX() - downXorY) > 10) {
                         return true /*onTouchEvent(event)*/;
                     }
                 }
@@ -477,11 +450,10 @@ public class Rota3DSwithView extends FrameLayout {
     }
 
     private int rotaViewtangle(int moveRxory) {
-
         int removeItem = moveRxory / rotation;
         int position = showIndex - removeItem;
-        reSetIndex(position);
         moveRotation = moveRxory % rotation;
+        reSetIndex(position);
         this.invalidate();
         return moveRotation;
     }
@@ -550,7 +522,7 @@ public class Rota3DSwithView extends FrameLayout {
 
 
     private void reSetIndex(int position) {
-        index = position;
+
         showDataPage(position);
     }
 
@@ -599,15 +571,15 @@ public class Rota3DSwithView extends FrameLayout {
     int showPage = 0;
 
     private void showDataPage(int position) {
-        int i = position % getChildCount();
-        int mathpage = 0;
-        if (i >= 0) {
-            mathpage = i;
+        index = position;
+        int isSEshowpage = 0;
+        if (Math.abs(moveRotation) > (rotation / 2)) {
+            isSEshowpage = swithView(2);
         } else {
-            mathpage = i + getChildCount();
+            isSEshowpage = swithView(3);
         }
-        if (mathpage != showPage) {
-            showPage = mathpage;
+        if (showPage != isSEshowpage) {
+            showPage = isSEshowpage;
             if (r3DPagechange != null) {
                 r3DPagechange.onPageChanged(showPage);
             }

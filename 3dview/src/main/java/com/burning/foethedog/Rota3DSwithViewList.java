@@ -139,7 +139,48 @@ public class Rota3DSwithViewList extends FrameLayout {
     int moveRotation = 00;
     int index = 0;
 
+
+
     private void disDrawrX(Canvas canvas) {
+        int indexleft = getWidth() / 2;//中间显示视图 ----左边的位置
+        int postTranslateX = moveRotation * childWith / 2 / rotation;//设-----定边移动 距离
+
+        chilDrawforCameraX(canvas, postTranslateX, indexleft, 0);
+        chilDrawforCameraX(canvas, postTranslateX, indexleft, 1);
+        if (Math.abs(moveRotation) > (rotation / 2)) {
+            chilDrawforCameraX(canvas, postTranslateX, indexleft, 3);
+            chilDrawforCameraX(canvas, postTranslateX, indexleft, 2);
+        }else {
+            chilDrawforCameraX(canvas, postTranslateX, indexleft, 2);
+            chilDrawforCameraX(canvas, postTranslateX, indexleft, 3);
+        }
+     /*   for (int i = 0; i < 4; i++)
+            chilDrawforCameraX(canvas, postTranslateX, indexleft, i);*/
+    }
+
+    private void disDrawrY(Canvas canvas) {
+        int indexleft = getHeight() / 2;//中间显示视图 ----左边的位置
+        int postTranslateX = moveRotation * childHeight / 2 / rotation;//设-----定边移动 距离
+        //定点  又称顶点
+      /*  for (int i = 0; i < 4; i++) {
+
+            chilDrawforCameraY(canvas, postTranslateX, indexleft, i);
+        }*/
+        chilDrawforCameraY(canvas, postTranslateX, indexleft, 0);
+        chilDrawforCameraY(canvas, postTranslateX, indexleft, 1);
+        if (Math.abs(moveRotation) > (rotation / 2)) {
+            chilDrawforCameraY(canvas, postTranslateX, indexleft, 3);
+            chilDrawforCameraY(canvas, postTranslateX, indexleft, 2);
+        }else {
+            chilDrawforCameraY(canvas, postTranslateX, indexleft, 2);
+            chilDrawforCameraY(canvas, postTranslateX, indexleft, 3);
+        }
+
+
+    }
+
+
+  /*  private void disDrawrX(Canvas canvas) {
         int indexleft = getWidth() / 2;//中间显示视图 ----左边的位置
         int postTranslateX = moveRotation * childWith / 2 / rotation;//设-----定边移动 距离
         for (int i = 0; i < 4; i++)
@@ -153,7 +194,7 @@ public class Rota3DSwithViewList extends FrameLayout {
         for (int i = 0; i < 4; i++) {
             chilDrawforCameraY(canvas, postTranslateX, indexleft, i);
         }
-    }
+    }*/
 
     boolean rotateV = false;
 
@@ -292,17 +333,6 @@ public class Rota3DSwithViewList extends FrameLayout {
             moveRotation++;
         else
             moveRotation--;
-        if (Math.abs(moveRotation) == rotation) {
-            moveRotation = 0;
-            int position = index % getAdapterCount();
-            reSetIndex(position);
-            if (isleftortop) {
-                position = index - 1;
-            } else {
-                position = index + 1;
-            }
-            reSetIndex(position);
-        }
         showIndex = index;
         rotaViewtangle(moveRotation);
         if (isAutoscroll())
@@ -442,11 +472,11 @@ public class Rota3DSwithViewList extends FrameLayout {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (isRotateV()) {
-                    if (Math.abs(event.getY() - downXorY) > 50) {
+                    if (Math.abs(event.getY() - downXorY) > 10) {
                         return true /*onTouchEvent(event)*/;
                     }
                 } else {
-                    if (Math.abs(event.getX() - downXorY) > 50) {
+                    if (Math.abs(event.getX() - downXorY) > 10) {
                         return true /*onTouchEvent(event)*/;
                     }
                 }
@@ -504,6 +534,7 @@ public class Rota3DSwithViewList extends FrameLayout {
         this.invalidate();
         return moveRotation;
     }
+
 
     private void setCameraChangeX(int translate, int roat, int i) {
         switch (i) {
@@ -569,7 +600,6 @@ public class Rota3DSwithViewList extends FrameLayout {
 
 
     private void reSetIndex(int position) {
-        index = position;
         showDataPage(position);
     }
 
@@ -618,20 +648,21 @@ public class Rota3DSwithViewList extends FrameLayout {
     int showPage = 0;
 
     private void showDataPage(int position) {
-        int i = position % getAdapterCount();
-        int mathpage = 0;
-        if (i >= 0) {
-            mathpage = i;
+        index = position;
+        int isSEshowpage = 0;
+        if (Math.abs(moveRotation) > (rotation / 2)) {
+            isSEshowpage = swithView(2);
         } else {
-            mathpage = i + getAdapterCount();
+            isSEshowpage = swithView(3);
         }
-        if (mathpage != showPage) {
-            showPage = mathpage;
+        if (showPage != isSEshowpage) {
+            showPage = isSEshowpage;
             if (r3DPagechange != null) {
                 r3DPagechange.onPageChanged(showPage);
             }
         }
     }
+
 
     R3DPagechange r3DPagechange;
 

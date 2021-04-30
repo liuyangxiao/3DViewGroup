@@ -54,11 +54,11 @@
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:background="#F78"
-        app:autoscroll="true"
-        app:heightRatio="0.7"
+        app:autoscroll="false"
+        app:heightRatio="0.8"
         app:rotateV="false"
         app:rotation="40"
-        app:widthRatio="0.6">
+        app:widthRatio="0.8">
 
 
         <FrameLayout
@@ -70,14 +70,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="#00f990"
-                android:text="FrameLayout===你好我看看长度够不够不够我再加长一些应该够了" />
+                android:text="11111111111" />
         </FrameLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#f11f"
+            android:text="222222222222" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#f11f"
-            android:text="无敌嘻嘻嘻123456789你好我看看长度够不够不够我再加长一些应该够了" />
+            android:text="33333333333333" />
 
         <TextView
             android:layout_width="200dp"
@@ -107,7 +112,7 @@
             android:layout_height="match_parent"
             android:background="#fff"
             android:gravity="center"
-            android:text="无敌嘻嘻嘻11111" />
+            android:text="无敌嘻嘻嘻77777777777777" />
 
         <TextView
             android:layout_width="200dp"
@@ -115,7 +120,7 @@
             android:layout_gravity="center"
             android:background="#ff5"
             android:gravity="center"
-            android:text="无敌嘻嘻嘻22222" />
+            android:text="无敌嘻嘻嘻888888888888" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/test_recylerview"

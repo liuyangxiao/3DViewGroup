@@ -28,6 +28,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 tx.setOnClickListener(this);
             }
         }
+        rota3DSwithView.setR3DPagechange(new Rota3DSwithView.R3DPagechange() {
+            @Override
+            public void onPageChanged(int position) {
+                System.out.println("=====onPageChanged==============" + position);
+            }
+        });
         findViewById(R.id.star_stop_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
