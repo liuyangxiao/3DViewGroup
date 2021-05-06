@@ -75,13 +75,20 @@ public class Rota3DSwithViewList extends FrameLayout {
         rotateV = typedArray.getBoolean(R.styleable.rota3DVSwithView_rotateV, false);
         autoscroll = typedArray.getBoolean(R.styleable.rota3DVSwithView_autoscroll, true);
         socallspeed = typedArray.getInt(R.styleable.rota3DVSwithView_speed, 80);
+        autoRebackandnext = typedArray.getBoolean(R.styleable.rota3DVSwithView_autoresetpage, true);
         setAutoscroll(autoscroll);
         rotation = typedArray.getInt(R.styleable.rota3DVSwithView_rotation, 40);
         heightRatio = typedArray.getFloat(R.styleable.rota3DVSwithView_heightRatio, 0.7f);
         widthRatio = typedArray.getFloat(R.styleable.rota3DVSwithView_widthRatio, 0.7f);
 
     }
+    public boolean isAutoRebackandnext() {
+        return autoRebackandnext;
+    }
 
+    public void setAutoRebackandnext(boolean autoRebackandnext) {
+        this.autoRebackandnext = autoRebackandnext;
+    }
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -140,7 +147,6 @@ public class Rota3DSwithViewList extends FrameLayout {
     int index = 0;
 
 
-
     private void disDrawrX(Canvas canvas) {
         int indexleft = getWidth() / 2;//中间显示视图 ----左边的位置
         int postTranslateX = moveRotation * childWith / 2 / rotation;//设-----定边移动 距离
@@ -150,7 +156,7 @@ public class Rota3DSwithViewList extends FrameLayout {
         if (Math.abs(moveRotation) > (rotation / 2)) {
             chilDrawforCameraX(canvas, postTranslateX, indexleft, 3);
             chilDrawforCameraX(canvas, postTranslateX, indexleft, 2);
-        }else {
+        } else {
             chilDrawforCameraX(canvas, postTranslateX, indexleft, 2);
             chilDrawforCameraX(canvas, postTranslateX, indexleft, 3);
         }
@@ -171,7 +177,7 @@ public class Rota3DSwithViewList extends FrameLayout {
         if (Math.abs(moveRotation) > (rotation / 2)) {
             chilDrawforCameraY(canvas, postTranslateX, indexleft, 3);
             chilDrawforCameraY(canvas, postTranslateX, indexleft, 2);
-        }else {
+        } else {
             chilDrawforCameraY(canvas, postTranslateX, indexleft, 2);
             chilDrawforCameraY(canvas, postTranslateX, indexleft, 3);
         }
@@ -482,10 +488,31 @@ public class Rota3DSwithViewList extends FrameLayout {
                 }
                 break;
             case MotionEvent.ACTION_UP:
+                if (autoRebackandnext && !autoscroll) {
+                    //自动回调 上一个和下一个
+                    setTouchUpNextView();
+                }
             case MotionEvent.ACTION_CANCEL:
                 return isTouch;
         }
         return super.onInterceptTouchEvent(event);
+    }
+    //是否自动复原
+    private boolean autoRebackandnext = true;
+    public void resetPageBack() {
+        setTouchUpNextView();
+    }
+    private void setTouchUpNextView() {
+        if (Math.abs(moveRotation) == rotation || moveRotation == 0) {
+            return;
+        }
+        ObjectAnimator mAnimator;
+        if (Math.abs(moveRotation) * 2 < rotation) {
+            mAnimator = ObjectAnimator.ofInt(this, Name, moveRotation, 0);
+        } else {
+            mAnimator = ObjectAnimator.ofInt(this, Name, moveRotation, moveRotation > 0 ? rotation : -rotation);
+        }
+        animationStart(mAnimator);
     }
 
     boolean touching_auto = false;
@@ -515,10 +542,10 @@ public class Rota3DSwithViewList extends FrameLayout {
         int moveRxory = 0;
         if (isRotateV()) {
             movedistance = -((int) event.getY() - downXorY);
-            moveRxory = thisRx + movedistance * rotation * 2 / (getHeight() + 100);
+            moveRxory = thisRx + movedistance * rotation / (getHeight());
         } else {
             movedistance = (int) event.getX() - downXorY;
-            moveRxory = thisRx + movedistance * rotation * 2 / (getWidth() + 100);
+            moveRxory = thisRx + movedistance * rotation / (getWidth());
         }
         isleftortop = (moveRxory > 0) ? true : false;
         rotaViewtangle(moveRxory);
@@ -611,12 +638,10 @@ public class Rota3DSwithViewList extends FrameLayout {
 
     private boolean isAnimationStarting = false;
 
-    @SuppressLint("ObjectAnimatorBinding")
     public void nextPage() {
         startAnimation(false);
     }
 
-    @SuppressLint("ObjectAnimatorBinding")
     private void startAnimation(boolean rightortop) {
         if (isAnimationStarting) {
             return;
@@ -624,8 +649,11 @@ public class Rota3DSwithViewList extends FrameLayout {
         isAnimationStarting = true;
         isleftortop = rightortop;
         showIndex = index;
-        Interpolator interpolator = new AccelerateInterpolator();
-        ObjectAnimator mAnimator = ObjectAnimator.ofInt(this, "xxxxx", moveRotation, rightortop ? rotation : -rotation);
+        ObjectAnimator mAnimator = ObjectAnimator.ofInt(this, Name, moveRotation, rightortop ? rotation : -rotation);
+        animationStart(mAnimator);
+    }
+    String Name = "sfasfaxxsf";
+    private void animationStart(ObjectAnimator mAnimator) {
         mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -640,10 +668,12 @@ public class Rota3DSwithViewList extends FrameLayout {
                 isAnimationStarting = false;
             }
         });
+        Interpolator interpolator = new AccelerateInterpolator();
         mAnimator.setInterpolator(interpolator);
         mAnimator.setDuration(120);
         mAnimator.start();
     }
+
 
     int showPage = 0;
 

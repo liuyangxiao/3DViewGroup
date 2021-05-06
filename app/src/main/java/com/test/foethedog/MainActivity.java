@@ -21,6 +21,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        findViewById(R.id.resetPage_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rota3DSwithView.resetPageBack();
+            }
+        });
         rota3DSwithView = (Rota3DSwithView) findViewById(R.id.roat_main);
         for (int i = 0; i < rota3DSwithView.getChildCount(); i++) {
             if (rota3DSwithView.getChildAt(i) instanceof TextView) {

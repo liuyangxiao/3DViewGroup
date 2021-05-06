@@ -64,10 +64,22 @@ public class Rota3DSwithView extends FrameLayout {
         setWillNotDraw(false);
     }
 
+    //是否自动复原
+    private boolean autoRebackandnext = true;
+
+    public boolean isAutoRebackandnext() {
+        return autoRebackandnext;
+    }
+
+    public void setAutoRebackandnext(boolean autoRebackandnext) {
+        this.autoRebackandnext = autoRebackandnext;
+    }
+
     private void initRoat3DStyle(AttributeSet attrs) {
         TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.rota3DVSwithView);
         rotateV = typedArray.getBoolean(R.styleable.rota3DVSwithView_rotateV, false);
         autoscroll = typedArray.getBoolean(R.styleable.rota3DVSwithView_autoscroll, true);
+        autoRebackandnext = typedArray.getBoolean(R.styleable.rota3DVSwithView_autoresetpage, true);
         setAutoscroll(autoscroll);
         rotation = typedArray.getInt(R.styleable.rota3DVSwithView_rotation, 40);
         socallspeed = typedArray.getInt(R.styleable.rota3DVSwithView_speed, 80);
@@ -141,18 +153,11 @@ public class Rota3DSwithView extends FrameLayout {
             chilDrawforCameraX(canvas, postTranslateX, indexleft, 2);
             chilDrawforCameraX(canvas, postTranslateX, indexleft, 3);
         }
-     /*   for (int i = 0; i < 4; i++)
-            chilDrawforCameraX(canvas, postTranslateX, indexleft, i);*/
     }
 
     private void disDrawrY(Canvas canvas) {
         int indexleft = getHeight() / 2;//中间显示视图 ----左边的位置
         int postTranslateX = moveRotation * childHeight / 2 / rotation;//设-----定边移动 距离
-        //定点  又称顶点
-      /*  for (int i = 0; i < 4; i++) {
-
-            chilDrawforCameraY(canvas, postTranslateX, indexleft, i);
-        }*/
         chilDrawforCameraY(canvas, postTranslateX, indexleft, 0);
         chilDrawforCameraY(canvas, postTranslateX, indexleft, 1);
         if (Math.abs(moveRotation) > (rotation / 2)) {
@@ -426,6 +431,11 @@ public class Rota3DSwithView extends FrameLayout {
                 ontouchView(event);
                 break;
             case MotionEvent.ACTION_UP:
+                if (autoRebackandnext && !autoscroll) {
+                    //自动回调 上一个和下一个
+                    setTouchUpNextView();
+                }
+
             case MotionEvent.ACTION_CANCEL:
                 isTouch = false;
                 senMessageStart();
@@ -439,10 +449,10 @@ public class Rota3DSwithView extends FrameLayout {
         int moveRxory = 0;
         if (isRotateV()) {
             movedistance = -((int) event.getY() - downXorY);
-            moveRxory = thisRx + movedistance * rotation * 2 / (getHeight() + 100);
+            moveRxory = thisRx + movedistance * rotation / (getHeight());
         } else {
             movedistance = (int) event.getX() - downXorY;
-            moveRxory = thisRx + movedistance * rotation * 2 / (getWidth() + 100);
+            moveRxory = thisRx + movedistance * rotation / (getWidth());
         }
         isleftortop = (moveRxory > 0) ? true : false;
         rotaViewtangle(moveRxory);
@@ -527,19 +537,16 @@ public class Rota3DSwithView extends FrameLayout {
     }
 
 
-    @SuppressLint("ObjectAnimatorBinding")
     public void returnPage() {
         startAnimation(true);
     }
 
     private boolean isAnimationStarting = false;
 
-    @SuppressLint("ObjectAnimatorBinding")
     public void nextPage() {
         startAnimation(false);
     }
 
-    @SuppressLint("ObjectAnimatorBinding")
     private void startAnimation(boolean rightortop) {
         if (isAnimationStarting) {
             return;
@@ -547,8 +554,30 @@ public class Rota3DSwithView extends FrameLayout {
         isAnimationStarting = true;
         isleftortop = rightortop;
         showIndex = index;
-        Interpolator interpolator = new AccelerateInterpolator();
-        ObjectAnimator mAnimator = ObjectAnimator.ofInt(this, "xxxxx", moveRotation, rightortop ? rotation : -rotation);
+        ObjectAnimator mAnimator = ObjectAnimator.ofInt(this, Name, moveRotation, rightortop ? rotation : -rotation);
+        animationStart(mAnimator);
+    }
+
+    String Name = "sfasfasf";
+
+    public void resetPageBack() {
+        setTouchUpNextView();
+    }
+
+    private void setTouchUpNextView() {
+        if (Math.abs(moveRotation) == rotation || moveRotation == 0) {
+            return;
+        }
+        ObjectAnimator mAnimator;
+        if (Math.abs(moveRotation) * 2 < rotation) {
+            mAnimator = ObjectAnimator.ofInt(this, Name, moveRotation, 0);
+        } else {
+            mAnimator = ObjectAnimator.ofInt(this, Name, moveRotation, moveRotation > 0 ? rotation : -rotation);
+        }
+        animationStart(mAnimator);
+    }
+
+    private void animationStart(ObjectAnimator mAnimator) {
         mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -563,6 +592,7 @@ public class Rota3DSwithView extends FrameLayout {
                 isAnimationStarting = false;
             }
         });
+        Interpolator interpolator = new AccelerateInterpolator();
         mAnimator.setInterpolator(interpolator);
         mAnimator.setDuration(120);
         mAnimator.start();

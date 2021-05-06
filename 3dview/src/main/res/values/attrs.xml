@@ -4,6 +4,7 @@
         <attr name="rotation" format="integer" />
         <attr name="rotateV" format="boolean" />
         <attr name="autoscroll" format="boolean" />
+        <attr name="autoresetpage" format="boolean" />
         <attr name="widthRatio" format="float" />
         <attr name="heightRatio" format="float" />
         <attr name="speed" format="integer" />

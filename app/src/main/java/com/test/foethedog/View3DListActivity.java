@@ -17,6 +17,12 @@ public class View3DListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view3_d_list);
+        findViewById(R.id.resetPage_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRota3DSwithViewList.resetPageBack();
+            }
+        });
         findViewById(R.id.star_stop_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

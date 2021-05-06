@@ -14,6 +14,12 @@
 
 
     <Button
+        android:id="@+id/resetPage_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="复原" />
+
+    <Button
         android:id="@+id/star_stop_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -55,10 +61,10 @@
         android:layout_height="300dp"
         android:background="#F78"
         app:autoscroll="false"
-        app:heightRatio="0.8"
+        app:heightRatio="0.7"
         app:rotateV="false"
         app:rotation="40"
-        app:widthRatio="0.8">
+        app:widthRatio="0.7">
 
 
         <FrameLayout

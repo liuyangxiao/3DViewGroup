@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <Button
+        android:id="@+id/resetPage_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="复原" />
 
     <Button
         android:id="@+id/star_stop_button"
